@@ -86,7 +86,7 @@ init_graphics::proc()->int {
   return 0;
 }
 
-render_right_text::proc(text:cstring, y:int, Font:^TTF.Font)->void {
+render_right_text::proc(text:cstring, y:int, Font:^TTF.Font) {
   surface :^SDL.Surface= TTF.RenderText_Solid(Font, text, Gray);
   texture :^SDL.Texture= SDL.CreateTextureFromSurface(rend, surface);
 
@@ -102,7 +102,7 @@ render_right_text::proc(text:cstring, y:int, Font:^TTF.Font)->void {
   SDL.DestroyTexture(texture);
 };
 
-render_score::proc(score:int, level:int)->void {
+render_score::proc(score:int, level:int) {
   score_str:cstring//[SCORE_SIZE];
   snprintf(score_str, SCORE_SIZE, "%0*d", SCORE_SIZE - 1, score);
 
@@ -116,7 +116,7 @@ render_score::proc(score:int, level:int)->void {
   render_right_text(level_str, BLOCK_SIZE * 7, Font_32);
 }
 
-render_game_over_text::proc(text:cstring, y:int, Font:^TTF.Font)->void {
+render_game_over_text::proc(text:cstring, y:int, Font:^TTF.Font) {
   SDL.Surface *surface = TTF.RenderText_Solid(Font, text, White);
   SDL.Texture *texture = SDL.CreateTextureFromSurface(rend, surface);
 
@@ -132,7 +132,7 @@ render_game_over_text::proc(text:cstring, y:int, Font:^TTF.Font)->void {
   SDL.DestroyTexture(texture);
 }
 
-render_game_over_message::proc(score:int)->void {
+render_game_over_message::proc(score:int) {
   score_str:cstring//[SCORE_SIZE];
   snprintf(score_str, SCORE_SIZE, "%i", score);
 
@@ -145,7 +145,7 @@ render_game_over_message::proc(score:int)->void {
   SDL.RenderPresent(rend);
 }
 
-draw_block::proc( x:int,  y:int,  color:u32)->void {
+draw_block::proc( x:int,  y:int,  color:u32) {
   outer:SDL.Rect;
   inner:SDL.Rect;
 
@@ -173,17 +173,17 @@ draw_block::proc( x:int,  y:int,  color:u32)->void {
   SDL.RenderFillRect(rend, &inner);
 }
 
-clear_screen::proc()->void {
+clear_screen::proc() {
   SDL.SetRenderDrawColor(rend, 0, 0, 0, 0);
   SDL.RenderClear(rend);
 }
 
-render_frame::proc(score:int, level:int)->void {
+render_frame::proc(score:int, level:int) {
   render_score(score, level);
   SDL.RenderPresent(rend);
 }
 
-release_resources::proc()->void {
+release_resources::proc() {
   SDL.DestroyRenderer(rend);
   SDL.DestroyWindow(win);
 

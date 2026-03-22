@@ -70,9 +70,9 @@ get_curr_fall_freq :: proc() -> u8 {
 
 state_changed :u8= 0;
 
-reset_fall_freq::proc()->void { fall_freq = get_curr_fall_freq(); }
+reset_fall_freq::proc() { fall_freq = get_curr_fall_freq(); }
 
-update_fall_freq::proc(new:int)->void {
+update_fall_freq::proc(new:int) {
   calculated :u8= get_curr_fall_freq();
   if (calculated < new) {
     fall_freq = calculated;
@@ -81,12 +81,12 @@ update_fall_freq::proc(new:int)->void {
   }
 }
 
-end_game::proc()->void {
+end_game::proc() {
   game_over = 1;
   clear_screen();
 }
 
-spawn_shape::proc()->void {
+spawn_shape::proc() {
   state_changed = 1;
 
   current_shape_type = rand() % N_SHAPES;
@@ -113,7 +113,7 @@ spawn_shape::proc()->void {
   };
 }
 
-restart_game::proc()->void {
+restart_game::proc() {
   for i :i8= 0; i < GRID_WIDTH; i+=1 {
     for  j :i8= 0; j < GRID_HEIGHT; j+=1 {
       grid[i][j] = 0;
@@ -129,7 +129,7 @@ restart_game::proc()->void {
   SDL_Delay(RESTART_DELAY);
 }
 
-destroy_row::proc(row:int)->void {
+destroy_row::proc(row:int) {
   for j :i8= row; j > 0; j-=1 {
     for i :i8= 0; i < GRID_WIDTH; i+=1 {
       grid[i][j] = grid[i][j - 1];
@@ -141,7 +141,7 @@ destroy_row::proc(row:int)->void {
   }
 }
 
-clean_destroyed_blocks::proc()->void {
+clean_destroyed_blocks::proc() {
   count :int= 0;
 
   for j :i8= 0; j < GRID_HEIGHT; j+=1 {
@@ -176,7 +176,7 @@ row_is_full::proc(y:i8)->int {
   return 1;
 }
 
-lock_shape::proc()->void {
+lock_shape::proc() {
   x, y:i8;
 
   to_destroy :u8= 0;
@@ -224,7 +224,7 @@ detect_collision::proc(x, y:i8)->i8 {
   return 0;
 }
 
-rotate_shape::proc()->void {
+rotate_shape::proc() {
   reset_fall_freq();
 
   if (current_shape_type == 0) {
@@ -254,7 +254,7 @@ rotate_shape::proc()->void {
   }
 }
 
-move_side::proc(direction:int)->void {
+move_side::proc(direction:int) {
   reset_fall_freq();
 
   x, y:i8;
@@ -272,7 +272,7 @@ move_side::proc(direction:int)->void {
   state_changed = 1;
 }
 
-fall::proc()->void {
+fall::proc() {
   iteration+=1;
   // Fall in `fall_freq` times
   if (iteration < fall_freq) {
@@ -296,7 +296,7 @@ fall::proc()->void {
   state_changed = 1;
 }
 
-handle_input_event::proc(event:InputEvent)->void {
+handle_input_event::proc(event:InputEvent) {
   #partial switch (event) {
   case LEFT:
     return move_side(-1);
@@ -311,7 +311,7 @@ handle_input_event::proc(event:InputEvent)->void {
   }
 }
 
-update_frame::proc()->void {
+update_frame::proc() {
   if (game_over) {
     return render_game_over_message(score);
   }
