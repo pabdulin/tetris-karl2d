@@ -1,104 +1,107 @@
-#include "graphics.h"
+package tetris_karl2d
 
-#define WIN_TITLE "Tetris"
+import SDL "vendor:sdl2"
+import TTF "vendor:sdl2/ttf"
 
-#ifdef __ENSCRIPTEN__
-#define FONT_PATH "font.ttf"
-#else
-#define FONT_PATH "src/assets/font.ttf"
-#endif
+WIN_TITLE ::"Tetris"
 
-#define SCORE_SIZE 7
-#define LEVEL_SIZE 3
+// #ifdef __ENSCRIPTEN__
+// #define FONT_PATH "font.ttf"
+// #else
+FONT_PATH:: "assets/font.ttf"
+// #endif
 
-const int WIN_WIDTH = (GRID_WIDTH + 5) * BLOCK_SIZE;
-const int WIN_HEIGHT = (GRID_HEIGHT + 2) * BLOCK_SIZE;
+SCORE_SIZE:: 7
+LEVEL_SIZE:: 3
 
-static SDL_Window *win;
-static SDL_Renderer *rend;
+WIN_WIDTH :int: (GRID_WIDTH + 5) * BLOCK_SIZE;
+WIN_HEIGHT :int: (GRID_HEIGHT + 2) * BLOCK_SIZE;
 
-static SDL_Color White = {0xff, 0xff, 0xff};
-static SDL_Color Gray = {0xcc, 0xcc, 0xcc};
-static TTF_Font *Font_18;
-static TTF_Font *Font_32;
+win:^SDL.Window;
+rend:^SDL.Renderer;
 
-static int init_fonts() {
-  if (TTF_Init() != 0) {
-    SDL_LogError(0, "error initializing TTF: %s\\n", TTF_GetError());
+ White:SDL.Color = {0xff, 0xff, 0xff};
+ Gray:SDL.Color = {0xcc, 0xcc, 0xcc};
+ Font_18:^TTF.Font;
+ Font_32:^TTF.Font;
+
+init_fonts::proc()->int {
+  if (TTF.Init() != 0) {
+    SDL.LogError(0, "error initializing TTF: %s\\n", TTF.GetError());
     return -1;
   };
 
-  Font_18 = TTF_OpenFont(FONT_PATH, 18);
+  Font_18 = TTF.OpenFont(FONT_PATH, 18);
   if (!Font_18) {
-    SDL_LogError(0, "error opening font 18 %s\n%s\\n", FONT_PATH,
-                 TTF_GetError());
-    TTF_Quit();
+    SDL.LogError(0, "error opening font 18 %s\n%s\\n", FONT_PATH,
+                 TTF.GetError());
+    TTF.Quit();
     return -1;
   }
 
-  Font_32 = TTF_OpenFont(FONT_PATH, 32);
+  Font_32 = TTF.OpenFont(FONT_PATH, 32);
   if (!Font_32) {
-    SDL_LogError(0, "error opening font 32 %s\n%s\\n", FONT_PATH,
-                 TTF_GetError());
-    TTF_CloseFont(Font_18);
-    TTF_Quit();
+    SDL.LogError(0, "error opening font 32 %s\n%s\\n", FONT_PATH,
+                 TTF.GetError());
+    TTF.CloseFont(Font_18);
+    TTF.Quit();
     return -1;
   }
 
   return 0;
 }
 
-int init_graphics() {
-  if (SDL_Init(SDL_INIT_VIDEO) != 0) {
-    SDL_LogError(0, "error initializing SDL: %s\\n", SDL_GetError());
+init_graphics::proc()->int {
+  if (SDL.Init(SDL.INIT_VIDEO) != 0) {
+    SDL.LogError(0, "error initializing SDL: %s\\n", SDL.GetError());
     return -1;
   }
 
-  win = SDL_CreateWindow(WIN_TITLE, SDL_WINDOWPOS_CENTERED,
-                         SDL_WINDOWPOS_CENTERED, WIN_WIDTH, WIN_HEIGHT, 0);
+  win = SDL.CreateWindow(WIN_TITLE, SDL.WINDOWPOS_CENTERED,
+                         SDL.WINDOWPOS_CENTERED, WIN_WIDTH, WIN_HEIGHT, 0);
 
   if (!win) {
-    SDL_LogError(0, "error creating window: %s\n", SDL_GetError());
-    SDL_Quit();
+    SDL.LogError(0, "error creating window: %s\n", SDL.GetError());
+    SDL.Quit();
     return -1;
   }
 
-  rend = SDL_CreateRenderer(win, -1, SDL_RENDERER_PRESENTVSYNC);
+  rend = SDL.CreateRenderer(win, -1, SDL.RENDERER_PRESENTVSYNC);
   if (!rend) {
-    SDL_LogError(0, "error creating renderer: %s\n", SDL_GetError());
-    SDL_DestroyWindow(win);
-    SDL_Quit();
+    SDL.LogError(0, "error creating renderer: %s\n", SDL.GetError());
+    SDL.DestroyWindow(win);
+    SDL.Quit();
     return -1;
   }
 
-  SDL_CreateRGBSurface(0, WIN_WIDTH, WIN_HEIGHT, 32, 0, 0, 0, 0);
+  SDL.CreateRGBSurface(0, WIN_WIDTH, WIN_HEIGHT, 32, 0, 0, 0, 0);
 
   if (init_fonts() != 0) {
-    SDL_DestroyWindow(win);
-    SDL_Quit();
+    SDL.DestroyWindow(win);
+    SDL.Quit();
     return -1;
   };
 
   return 0;
 }
 
-static void render_right_text(const char *text, int y, TTF_Font *Font) {
-  SDL_Surface *surface = TTF_RenderText_Solid(Font, text, Gray);
-  SDL_Texture *texture = SDL_CreateTextureFromSurface(rend, surface);
+render_right_text::proc(text:cstring, y:int, Font:^TTF.Font)->void {
+  surface :^SDL.Surface= TTF.RenderText_Solid(Font, text, Gray);
+  texture :^SDL.Texture= SDL.CreateTextureFromSurface(rend, surface);
 
-  SDL_Rect rect;
+  SDL.Rect rect;
   rect.x = (GRID_WIDTH + 3) * BLOCK_SIZE - surface->w / 2;
   rect.y = y;
   rect.w = surface->w;
   rect.h = surface->h;
 
-  SDL_RenderCopy(rend, texture, NULL, &rect);
+  SDL.RenderCopy(rend, texture, NULL, &rect);
 
-  SDL_FreeSurface(surface);
-  SDL_DestroyTexture(texture);
+  SDL.FreeSurface(surface);
+  SDL.DestroyTexture(texture);
 };
 
-static void render_score(int score, int level) {
+render_score::proc(score:int, level:int)->void {
   char score_str[SCORE_SIZE];
   snprintf(score_str, SCORE_SIZE, "%0*d", SCORE_SIZE - 1, score);
 
@@ -112,23 +115,23 @@ static void render_score(int score, int level) {
   render_right_text(level_str, BLOCK_SIZE * 7, Font_32);
 }
 
-static void render_game_over_text(const char *text, int y, TTF_Font *Font) {
-  SDL_Surface *surface = TTF_RenderText_Solid(Font, text, White);
-  SDL_Texture *texture = SDL_CreateTextureFromSurface(rend, surface);
+render_game_over_text::proc(text:cstring, y:int, Font:^TTF.Font)->void {
+  SDL.Surface *surface = TTF.RenderText_Solid(Font, text, White);
+  SDL.Texture *texture = SDL.CreateTextureFromSurface(rend, surface);
 
-  SDL_Rect rect;
+  SDL.Rect rect;
   rect.x = (WIN_WIDTH - surface->w) / 2;
   rect.y = y;
   rect.w = surface->w;
   rect.h = surface->h;
 
-  SDL_RenderCopy(rend, texture, NULL, &rect);
+  SDL.RenderCopy(rend, texture, NULL, &rect);
 
-  SDL_FreeSurface(surface);
-  SDL_DestroyTexture(texture);
+  SDL.FreeSurface(surface);
+  SDL.DestroyTexture(texture);
 }
 
-void render_game_over_message(int score) {
+render_game_over_message::proc(score:int)->void {
   char score_str[SCORE_SIZE];
   snprintf(score_str, SCORE_SIZE, "%i", score);
 
@@ -138,12 +141,12 @@ void render_game_over_message(int score) {
   render_game_over_text(score_str, WIN_HEIGHT / 2, Font_32);
   render_game_over_text("Press any key to restart...",
                         WIN_HEIGHT / 2 + BLOCK_SIZE * 2, Font_18);
-  SDL_RenderPresent(rend);
+  SDL.RenderPresent(rend);
 }
 
-void draw_block(int x, int y, int color) {
-  SDL_Rect outer;
-  SDL_Rect inner;
+draw_block::proc( x:int,  y:int,  color:u32)->void {
+  SDL.Rect outer;
+  SDL.Rect inner;
 
   outer.x = (x + 1) * BLOCK_SIZE;
   outer.y = (y + 1) * BLOCK_SIZE;
@@ -155,37 +158,37 @@ void draw_block(int x, int y, int color) {
   inner.w = BLOCK_SIZE - 2;
   inner.h = BLOCK_SIZE - 2;
 
-  SDL_SetRenderDrawColor(rend, 0x0c, 0x0c, 0x0c, 0xff);
-  SDL_RenderFillRect(rend, &outer);
+  SDL.SetRenderDrawColor(rend, 0x0c, 0x0c, 0x0c, 0xff);
+  SDL.RenderFillRect(rend, &outer);
 
-  unsigned int r, g, b;
+  r, g, b:u32;
 
   // Shift bits and extract 8 least significant bits for each color;
   r = (color >> 16) & 0xFF;
   g = (color >> 8) & 0xFF;
   b = color & 0xFF;
 
-  SDL_SetRenderDrawColor(rend, r, g, b, 0xff);
-  SDL_RenderFillRect(rend, &inner);
+  SDL.SetRenderDrawColor(rend, r, g, b, 0xff);
+  SDL.RenderFillRect(rend, &inner);
 }
 
-void clear_screen() {
-  SDL_SetRenderDrawColor(rend, 0, 0, 0, 0);
-  SDL_RenderClear(rend);
+clear_screen::proc()->void {
+  SDL.SetRenderDrawColor(rend, 0, 0, 0, 0);
+  SDL.RenderClear(rend);
 }
 
-void render_frame(int score, int level) {
+render_frame::proc(int score, int level)->void {
   render_score(score, level);
-  SDL_RenderPresent(rend);
+  SDL.RenderPresent(rend);
 }
 
-void release_resources() {
-  SDL_DestroyRenderer(rend);
-  SDL_DestroyWindow(win);
+release_resources::proc()->void {
+  SDL.DestroyRenderer(rend);
+  SDL.DestroyWindow(win);
 
-  TTF_CloseFont(Font_18);
-  TTF_CloseFont(Font_32);
-  TTF_Quit();
+  TTF.CloseFont(Font_18);
+  TTF.CloseFont(Font_32);
+  TTF.Quit();
 
-  SDL_Quit();
+  SDL.Quit();
 }
