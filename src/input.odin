@@ -16,37 +16,37 @@ InputEvent::enum {
 
 handle_key_down::proc(key_code:SDL.Keycode)->InputEvent {
   #partial switch (key_code) {
-  case SDLK_ESCAPE:
-    return QUIT;
-  case SDLK_LEFT:
-  case SDLK_a:
-    return LEFT;
-  case SDLK_RIGHT:
-  case SDLK_d:
-    return RIGHT;
-  case SDLK_UP:
-  case SDLK_w:
-    return ROTATE;
-  case SDLK_DOWN:
-  case SDLK_s:
-    return SOFT_DROP;
-  case SDLK_SPACE:
-    return HARD_DROP;
+  case .ESCAPE:
+    return .QUIT;
+  case .LEFT:
+  case .a:
+    return .LEFT;
+  case .RIGHT:
+  case .d:
+    return .RIGHT;
+  case .UP:
+  case .w:
+    return .ROTATE;
+  case .DOWN:
+  case .s:
+    return .SOFT_DROP;
+  case .SPACE:
+    return .HARD_DROP;
   }
-  return ANY_INPUT;
+  return .ANY_INPUT;
 }
 
 listen_for_input::proc(game_over:int)->InputEvent {
   event:SDL.Event;
 
   for SDL.PollEvent(&event) {
-    if (event.type == SDL.QUIT) {
-      return QUIT;
+    if (event.type == .QUIT) {
+      return .QUIT;
     }
-    if (event.type == SDL.KEYDOWN) {
+    if (event.type == .KEYDOWN) {
       return handle_key_down(event.key.keysym.sym);
     }
   }
 
-  return NO_INPUT;
+  return .NO_INPUT;
 }
