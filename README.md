@@ -1,4 +1,7 @@
-# SDL Tetris
+# SDL Tetris (port to Odin programming language)
+
+This project is based on:
+https://github.com/olzhasar/sdl-tetris
 
 An implementation of the classic [Tetris game](https://en.wikipedia.org/wiki/Tetris) in the C programming language using the [SDL-2 library](https://www.libsdl.org/)
 
@@ -47,3 +50,10 @@ make
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## Attribution
+
+This project is derived from:
+https://github.com/olzhasar/sdl-tetris
+
+Used under MIT License.
