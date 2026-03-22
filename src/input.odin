@@ -37,7 +37,7 @@ handle_key_down::proc(key_code:SDL.Keycode)->InputEvent {
 }
 
 listen_for_input::proc(game_over:int)->InputEvent {
-  SDL.Event event;
+  event:SDL.Event;
 
   for SDL.PollEvent(&event) {
     if (event.type == SDL.QUIT) {
