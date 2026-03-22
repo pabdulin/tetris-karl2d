@@ -13,14 +13,14 @@ main::proc() {
 
   if (init_game() != 0) {
     SDL.LogError(0, "Failed to start game\n");
-    return 1;
+    //return 1;
   };
 
 // #ifdef __EMSCRIPTEN__
 //   emscripten_set_main_loop(run_loop, 0, 1);
 // #else
   for ;; {
-    res :int= game_loop();
+    res :i8= game_loop();
 
     if (res != 0) {
       if (res < 0) {
@@ -35,5 +35,5 @@ main::proc() {
     SDL.LogError(0, "Error while terminating game\n");
   };
 
-  return 0;
+  //return 0;
 }
