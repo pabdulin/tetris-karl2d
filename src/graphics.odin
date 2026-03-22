@@ -1,5 +1,6 @@
 package tetris_karl2d
 
+import "core:fmt"
 import SDL "vendor:sdl2"
 import TTF "vendor:sdl2/ttf"
 
@@ -89,7 +90,7 @@ render_right_text::proc(text:cstring, y:int, Font:^TTF.Font)->void {
   surface :^SDL.Surface= TTF.RenderText_Solid(Font, text, Gray);
   texture :^SDL.Texture= SDL.CreateTextureFromSurface(rend, surface);
 
-  SDL.Rect rect;
+  rect:SDL.Rect;
   rect.x = (GRID_WIDTH + 3) * BLOCK_SIZE - surface->w / 2;
   rect.y = y;
   rect.w = surface->w;
@@ -102,13 +103,13 @@ render_right_text::proc(text:cstring, y:int, Font:^TTF.Font)->void {
 };
 
 render_score::proc(score:int, level:int)->void {
-  char score_str[SCORE_SIZE];
+  score_str:cstring//[SCORE_SIZE];
   snprintf(score_str, SCORE_SIZE, "%0*d", SCORE_SIZE - 1, score);
 
   render_right_text("SCORE", BLOCK_SIZE, Font_18);
   render_right_text(score_str, BLOCK_SIZE * 2, Font_32);
 
-  char level_str[3];
+  level_str:cstring//[3];
   snprintf(level_str, 3, "%0*d", LEVEL_SIZE - 1, level);
 
   render_right_text("LEVEL", BLOCK_SIZE * 6, Font_18);
@@ -119,7 +120,7 @@ render_game_over_text::proc(text:cstring, y:int, Font:^TTF.Font)->void {
   SDL.Surface *surface = TTF.RenderText_Solid(Font, text, White);
   SDL.Texture *texture = SDL.CreateTextureFromSurface(rend, surface);
 
-  SDL.Rect rect;
+  rect:SDL.Rect;
   rect.x = (WIN_WIDTH - surface->w) / 2;
   rect.y = y;
   rect.w = surface->w;
@@ -132,7 +133,7 @@ render_game_over_text::proc(text:cstring, y:int, Font:^TTF.Font)->void {
 }
 
 render_game_over_message::proc(score:int)->void {
-  char score_str[SCORE_SIZE];
+  score_str:cstring//[SCORE_SIZE];
   snprintf(score_str, SCORE_SIZE, "%i", score);
 
   render_game_over_text("GAME OVER", WIN_HEIGHT / 2 - BLOCK_SIZE * 3, Font_32);
@@ -145,8 +146,8 @@ render_game_over_message::proc(score:int)->void {
 }
 
 draw_block::proc( x:int,  y:int,  color:u32)->void {
-  SDL.Rect outer;
-  SDL.Rect inner;
+  outer:SDL.Rect;
+  inner:SDL.Rect;
 
   outer.x = (x + 1) * BLOCK_SIZE;
   outer.y = (y + 1) * BLOCK_SIZE;
@@ -177,7 +178,7 @@ clear_screen::proc()->void {
   SDL.RenderClear(rend);
 }
 
-render_frame::proc(int score, int level)->void {
+render_frame::proc(score:int, level:int)->void {
   render_score(score, level);
   SDL.RenderPresent(rend);
 }
