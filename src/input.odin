@@ -2,6 +2,18 @@
 #include "definitions.h"
 #include <SDL_keycode.h>
 
+enum InputEvent {
+  QUIT = -1,
+  NO_INPUT = 0,
+  ANY_INPUT = 99,
+  LEFT = 2,
+  RIGHT = 3,
+  DOWN = 4,
+  ROTATE = 5,
+  SOFT_DROP = 6,
+  HARD_DROP = 7,
+};
+
 static int handle_key_down(SDL_Keycode key_code) {
   switch (key_code) {
   case SDLK_ESCAPE:
