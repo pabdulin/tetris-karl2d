@@ -72,8 +72,8 @@ state_changed :u8= 0;
 
 reset_fall_freq::proc()->void { fall_freq = get_curr_fall_freq(); }
 
-update_fall_freq::proc(int new)->void {
-  u8 calculated = get_curr_fall_freq();
+update_fall_freq::proc(new:int)->void {
+  calculated :u8= get_curr_fall_freq();
   if (calculated < new) {
     fall_freq = calculated;
   } else {
@@ -179,7 +179,7 @@ row_is_full::proc(y:i8)->int {
 lock_shape::proc()->void {
   x, y:i8;
 
-  u8 to_destroy = 0;
+  to_destroy :u8= 0;
 
   for i :i8= 0; i < 4; i+=1 {
     x = current_shape[i * 2] + current_x;
@@ -233,7 +233,7 @@ rotate_shape::proc()->void {
 
   state_changed = 1;
 
-  i8 temp[8] = {0};
+  temp:[8]i8 = {0};
 
   x, y:i8;
 
