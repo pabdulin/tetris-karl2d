@@ -8,7 +8,7 @@ import SDL "vendor:sdl2"
 
 main::proc() {
 // #ifndef __EMSCRIPTEN__
-  srand(time(NULL)); // seed the random number generator
+//  srand(time(NULL)); // seed the random number generator
 // #endif
 
   if (init_game() != 0) {
