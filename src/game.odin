@@ -193,7 +193,7 @@ row_is_full :: proc(y: i32) -> int {
 lock_shape :: proc() {
 	x, y: i32
 
-	to_destroy: u32 = 0
+	local_to_destroy: bool = false
 
 	for i: i32 = 0; i < 4; i += 1 {
 		x = current_shape[i * 2] + current_x
@@ -203,16 +203,19 @@ lock_shape :: proc() {
 			grid[x][y] = current_shape_color
 		}
 
+        // TODO (pabdulin): this check is performed multiple times
+        // and looks like it's unnecessary as we can check content of to_destroy array
 		if (row_is_full(y) != 0) {
-			to_destroy += 1
+			local_to_destroy = true
 		} else {
+            // if one of the locked shape cells is outside of the grid
 			if (y <= 0) {
 				end_game()
 			}
 		}
 	}
 
-	if (to_destroy != 0) {
+	if (local_to_destroy) {
 		clean_destroyed_blocks()
 	}
 
