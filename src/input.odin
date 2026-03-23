@@ -18,21 +18,31 @@ handle_key_down :: proc(key_code: SDL.Keycode) -> InputEvent {
 	#partial switch (key_code) {
 	case .ESCAPE:
 		return .QUIT
+
 	case .LEFT:
+		fallthrough
 	case .a:
 		return .LEFT
+
 	case .RIGHT:
+		fallthrough
 	case .d:
 		return .RIGHT
+
 	case .UP:
+		fallthrough
 	case .w:
 		return .ROTATE
+
 	case .DOWN:
+		fallthrough
 	case .s:
 		return .SOFT_DROP
+
 	case .SPACE:
 		return .HARD_DROP
 	}
+
 	return .ANY_INPUT
 }
 
