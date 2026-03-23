@@ -1,14 +1,17 @@
 package tetris_karl2d
 
+import "core:math/rand"
+import SDL "vendor:sdl2"
+
 BLOCK_SIZE :: 40
 GRID_WIDTH :: 10
 GRID_HEIGHT :: 20
 
 // Grid is represented as m x n int matrix. Values are color indices for
 // occupied cells or 0 for empty cells
-grid :[GRID_WIDTH][GRID_HEIGHT]u8= {0};
+grid :[GRID_WIDTH][GRID_HEIGHT]u8= {};
 // Array of rows that need to be destroyed
-to_destroy :[GRID_HEIGHT]u8= {0};
+to_destroy :[GRID_HEIGHT]u8= {};
 
 game_over :u8= 0;
 score :u32= 0;
@@ -19,7 +22,7 @@ lines_cleared :u8= 0;
 current_level :u8= 0;
 fall_freq :u8= 48;
 MAX_LEVEL_FREQ :u8: 15;
-LEVEL_FREQS :[15]u8: {48, 43, 38, 33, 28, 23, 18, 13,
+LEVEL_FREQS :[15]u8= {48, 43, 38, 33, 28, 23, 18, 13,
                                         8,  6,  5,  4,  3,  2,  1};
 SOFT_FREQ :u8: 3;
 HARD_FREQ :u8: 1;
@@ -33,7 +36,7 @@ COLORS :[14]u32: {
 // Array of blocks in the current shape
 // Each value pair corresponds to the shift from the shape
 // position over x and y axis
-current_shape :[8]i8= {0};
+current_shape :[8]i8= {};
 // Index of the color in the COLORS array
 current_shape_color :u8= 0;
 // Index of the current shape in the SHAPES array
@@ -72,7 +75,7 @@ state_changed :u8= 0;
 
 reset_fall_freq::proc() { fall_freq = get_curr_fall_freq(); }
 
-update_fall_freq::proc(new:int) {
+update_fall_freq::proc(new:u8) {
   calculated :u8= get_curr_fall_freq();
   if (calculated < new) {
     fall_freq = calculated;
@@ -89,8 +92,8 @@ end_game::proc() {
 spawn_shape::proc() {
   state_changed = 1;
 
-  current_shape_type = rand() % N_SHAPES;
-  current_shape_color = rand() % (N_COLORS - 1) + 1;
+  current_shape_type := rand.uint_max(uint(N_SHAPES));
+  current_shape_color := rand.uint_max(uint(N_COLORS - 1)) + 1;
 
   for  i :i8= 0; i < 8; i += 1 {
     current_shape[i] = SHAPES[current_shape_type][i];
@@ -126,7 +129,7 @@ restart_game::proc() {
   score = 0;
 
   spawn_shape();
-  SDL_Delay(RESTART_DELAY);
+  SDL.Delay(u32(RESTART_DELAY));
 }
 
 destroy_row::proc(row:int) {
@@ -145,7 +148,7 @@ clean_destroyed_blocks::proc() {
   count :int= 0;
 
   for j :i8= 0; j < GRID_HEIGHT; j+=1 {
-    if (to_destroy[j]) {
+    if (to_destroy[j] != 0) {
       count+=1;
 
       to_destroy[j] = 0;
@@ -156,7 +159,7 @@ clean_destroyed_blocks::proc() {
     }
   }
 
-  if (count) {
+  if (count != 0) {
     score += SCORE_LINE * (1 + 2 * (count - 1));
   }
 }
@@ -364,7 +367,7 @@ game_loop::proc()->i8 {
     fall();
     update_frame();
 
-    SDL_Delay(FRAME_DELAY);
+    SDL.Delay(FRAME_DELAY);
   }
 
   return 0;
