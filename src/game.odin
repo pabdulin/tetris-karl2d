@@ -13,7 +13,7 @@ grid :[GRID_WIDTH][GRID_HEIGHT]u8= {};
 // Array of rows that need to be destroyed
 to_destroy :[GRID_HEIGHT]u8= {};
 
-game_over :u8= 0;
+game_over :bool= false;
 score :u32= 0;
 
 iteration :u8= 0;
@@ -85,7 +85,7 @@ update_fall_freq::proc(new:u8) {
 }
 
 end_game::proc() {
-  game_over = 1;
+  game_over = true;
   clear_screen();
 }
 
@@ -123,7 +123,7 @@ restart_game::proc() {
     }
   };
 
-  game_over = 0;
+  game_over = false;
   current_level = 0;
   lines_cleared = 0;
   score = 0;
@@ -316,7 +316,7 @@ handle_input_event::proc(event:InputEvent) {
 }
 
 update_frame::proc() {
-  if (game_over != 0) {
+  if (game_over) {
     render_game_over_message(score); return;
   }
 
@@ -359,7 +359,7 @@ game_loop::proc()->i8 {
     return 1;
   }
 
-  if (game_over != 0) {
+  if (game_over) {
     if (int(event) > 0) {
       restart_game();
     }
