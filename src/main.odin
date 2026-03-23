@@ -1,14 +1,14 @@
 package tetris_karl2d
 
-import SDL "vendor:sdl2"
 import "core:fmt"
 import "core:mem"
+import SDL "vendor:sdl2"
 
 // #ifdef __EMSCRIPTEN__
 // void run_loop() { game_loop(); }
 // #endif
 
-main::proc() {
+main :: proc() {
 	track: mem.Tracking_Allocator
 	mem.tracking_allocator_init(&track, context.allocator)
 	context.allocator = mem.tracking_allocator(&track)
@@ -31,33 +31,33 @@ main::proc() {
 		fmt.printfln("-------------------- [Tracking_Allocator] --------------------")
 	}
 
-// #ifndef __EMSCRIPTEN__
-//  srand(time(NULL)); // seed the random number generator
-// #endif
+	// #ifndef __EMSCRIPTEN__
+	//  srand(time(NULL)); // seed the random number generator
+	// #endif
 
-  if (init_game() != 0) {
-    SDL.LogError(0, "Failed to start game\n");
-    //return 1;
-  };
+	if (init_game() != 0) {
+		SDL.LogError(0, "Failed to start game\n")
+		//return 1;
+	}
 
-// #ifdef __EMSCRIPTEN__
-//   emscripten_set_main_loop(run_loop, 0, 1);
-// #else
-  for ;; {
-    res :i32= game_loop();
+	// #ifdef __EMSCRIPTEN__
+	//   emscripten_set_main_loop(run_loop, 0, 1);
+	// #else
+	for {
+		res: i32 = game_loop()
 
-    if (res != 0) {
-      if (res < 0) {
-        SDL.LogError(0, "Unexpected error occured\n");
-      }
-      break;
-    }
-  }
-// #endif
+		if (res != 0) {
+			if (res < 0) {
+				SDL.LogError(0, "Unexpected error occured\n")
+			}
+			break
+		}
+	}
+	// #endif
 
-  if (terminate_game() != 0) {
-    SDL.LogError(0, "Error while terminating game\n");
-  };
+	if (terminate_game() != 0) {
+		SDL.LogError(0, "Error while terminating game\n")
+	}
 
-  //return 0;
+	//return 0;
 }
