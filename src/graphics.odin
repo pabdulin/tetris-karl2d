@@ -6,16 +6,9 @@ import SDL "vendor:sdl2"
 import TTF "vendor:sdl2/ttf"
 
 WIN_TITLE :: "Tetris"
-
-// #ifdef __ENSCRIPTEN__
-// #define FONT_PATH "font.ttf"
-// #else
 FONT_PATH :: "assets/font.ttf"
-// #endif
-
 SCORE_SIZE :: 7
 LEVEL_SIZE :: 3
-
 WIN_WIDTH :: (GRID_WIDTH + 5) * BLOCK_SIZE
 WIN_HEIGHT :: (GRID_HEIGHT + 2) * BLOCK_SIZE
 

@@ -4,10 +4,6 @@ import "core:fmt"
 import "core:mem"
 import SDL "vendor:sdl2"
 
-// #ifdef __EMSCRIPTEN__
-// void run_loop() { game_loop(); }
-// #endif
-
 main :: proc() {
 	track: mem.Tracking_Allocator
 	mem.tracking_allocator_init(&track, context.allocator)
@@ -31,18 +27,11 @@ main :: proc() {
 		fmt.printfln("-------------------- [Tracking_Allocator] --------------------")
 	}
 
-	// #ifndef __EMSCRIPTEN__
-	//  srand(time(NULL)); // seed the random number generator
-	// #endif
-
 	if (init_game() != 0) {
 		SDL.LogError(0, "Failed to start game\n")
-		//return 1;
+		return
 	}
 
-	// #ifdef __EMSCRIPTEN__
-	//   emscripten_set_main_loop(run_loop, 0, 1);
-	// #else
 	for {
 		res: i32 = game_loop()
 
@@ -53,11 +42,8 @@ main :: proc() {
 			break
 		}
 	}
-	// #endif
 
 	if (terminate_game() != 0) {
 		SDL.LogError(0, "Error while terminating game\n")
 	}
-
-	//return 0;
 }
