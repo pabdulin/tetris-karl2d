@@ -60,7 +60,7 @@ init_graphics::proc()->int {
   }
 
   win = SDL.CreateWindow(WIN_TITLE, SDL.WINDOWPOS_CENTERED,
-                         SDL.WINDOWPOS_CENTERED, i32(WIN_WIDTH), i32(WIN_HEIGHT),  { .FULLSCREEN});
+                         SDL.WINDOWPOS_CENTERED, i32(WIN_WIDTH), i32(WIN_HEIGHT),  { });
 
   if (win == nil) {
     SDL.LogError(0, "error creating window: %s\n", SDL.GetError());
