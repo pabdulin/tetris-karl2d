@@ -71,7 +71,7 @@ get_curr_fall_freq :: proc() -> u8 {
   return LEVEL_FREQS[current_level];
 };
 
-state_changed :u8= 0;
+state_changed :bool= false;
 
 reset_fall_freq::proc() { fall_freq = get_curr_fall_freq(); }
 
@@ -90,7 +90,7 @@ end_game::proc() {
 }
 
 spawn_shape::proc() {
-  state_changed = 1;
+  state_changed = true;
 
   current_shape_type := rand.uint_max(uint(N_SHAPES));
   current_shape_color := rand.uint_max(uint(N_COLORS - 1)) + 1;
@@ -234,7 +234,7 @@ rotate_shape::proc() {
     return; // O-shape should not be rotated
   }
 
-  state_changed = 1;
+  state_changed = true;
 
   temp:[8]i8 = {};
 
@@ -272,7 +272,7 @@ move_side::proc(direction:i8) {
   }
 
   current_x += direction;
-  state_changed = 1;
+  state_changed = true;
 }
 
 fall::proc() {
@@ -297,7 +297,7 @@ fall::proc() {
   }
 
   current_y += 1;
-  state_changed = 1;
+  state_changed = true;
 }
 
 handle_input_event::proc(event:InputEvent) {
@@ -320,7 +320,7 @@ update_frame::proc() {
     render_game_over_message(score); return;
   }
 
-  if (state_changed == 0) {
+  if (!state_changed) {
     return; // no need to rerender if all blocks remain at the same positions
   }
 
@@ -344,7 +344,7 @@ update_frame::proc() {
   }
 
   render_frame(score, current_level);
-  state_changed = 0;
+  state_changed = false;
 }
 
 init_game::proc()->i8 {
