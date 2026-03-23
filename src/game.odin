@@ -7,7 +7,7 @@ BLOCK_SIZE :: 40
 GRID_WIDTH :: 10
 GRID_HEIGHT :: 20
 
-// Grid is represented as m x n int matrix. Values are color indices for
+// Grid is represented as m x n matrix. Values are color indices for
 // occupied cells or 0 for empty cells
 grid: [GRID_WIDTH][GRID_HEIGHT]u32 = {}
 // Array of rows that need to be destroyed
@@ -58,16 +58,16 @@ current_x: i32 = 0
 current_y: i32 = 0
 
 // Represent shapes as an array of 8 ints.
-// Each int pair represents the shift from the shape position over x and y axis
+// Each pair (0+1, 2+3, 4+5, 6+7) represents the shift from the shape position over x and y axis
 N_SHAPES: u32 : 7
 SHAPES: [7][8]i32 = {
-	{0, 0, 1, 0, 0, 1, 1, 1},   // O
-	{0, 0, -1, 0, 1, 0, 0, 1},  // T
-	{0, 0, 0, -1, 0, 1, 1, 1},  // L
+	{0, 0, 1, 0, 0, 1, 1, 1}, // O
+	{0, 0, -1, 0, 1, 0, 0, 1}, // T
+	{0, 0, 0, -1, 0, 1, 1, 1}, // L
 	{0, 0, 0, -1, 0, 1, -1, 1}, // J
-	{0, 0, 0, -1, 0, 1, 0, 2},  // I
-	{0, 0, 1, 0, 0, 1, -1, 1},  // S
-	{0, 0, -1, 0, 0, 1, 1, 1},  // Z
+	{0, 0, 0, -1, 0, 1, 0, 2}, // I
+	{0, 0, 1, 0, 0, 1, -1, 1}, // S
+	{0, 0, -1, 0, 0, 1, 1, 1}, // Z
 }
 
 FRAME_DELAY :: 16 // 1000 / 16 ~= 60fps
@@ -143,9 +143,9 @@ restart_game :: proc() {
 	SDL.Delay(u32(RESTART_DELAY))
 }
 
-destroy_row :: proc(row: i32) {
-	for j: i32 = row; j > 0; j -= 1 {
-		for i: i32 = 0; i < GRID_WIDTH; i += 1 {
+destroy_row :: proc(row: u32) {
+	for j: u32 = row; j > 0; j -= 1 {
+		for i: u32 = 0; i < GRID_WIDTH; i += 1 {
 			grid[i][j] = grid[i][j - 1]
 		}
 	}
@@ -156,14 +156,14 @@ destroy_row :: proc(row: i32) {
 }
 
 clean_destroyed_blocks :: proc() {
-	count: int = 0
+	count := 0
 
-	for j: i32 = 0; j < GRID_HEIGHT; j += 1 {
+	for j: u32 = 0; j < GRID_HEIGHT; j += 1 {
 		if (to_destroy[j] != 0) {
 			count += 1
 
 			to_destroy[j] = 0
-			for i: i32 = 0; i < GRID_WIDTH; i += 1 {
+			for i: u32 = 0; i < GRID_WIDTH; i += 1 {
 				grid[i][j] = 0
 			}
 			destroy_row(j)
@@ -302,8 +302,8 @@ fall :: proc() {
 		y = current_shape[i * 2 + 1] + current_y + 1
 
 		if (detect_collision(x, y) != 0) {
-			//return
-			lock_shape(); return // TODO (p.abdulin): check
+			lock_shape()
+            return
 		}
 	}
 
@@ -337,8 +337,8 @@ update_frame :: proc() {
 
 	clear_screen()
 
-	for i: i32 = 0; i < GRID_WIDTH; i += 1 {
-		for j: i32 = 0; j < GRID_HEIGHT; j += 1 {
+	for i: u32 = 0; i < GRID_WIDTH; i += 1 {
+		for j: u32 = 0; j < GRID_HEIGHT; j += 1 {
 			draw_block(i, j, COLORS[grid[i][j]])
 		}
 	}
@@ -349,8 +349,9 @@ update_frame :: proc() {
 		x = current_shape[i * 2] + current_x
 		y = current_shape[i * 2 + 1] + current_y
 
-		if (y >= 0) { 	// skip overflowed
-			draw_block(x, y, COLORS[current_shape_color])
+		// skip overflowed
+		if (y >= 0) {
+			draw_block(u32(x), u32(y), COLORS[current_shape_color])
 		}
 	}
 
@@ -365,7 +366,7 @@ init_game :: proc() -> bool {
 }
 
 game_loop :: proc() -> i32 {
-	event: InputEvent = listen_for_input(int(game_over))
+	event: InputEvent = listen_for_input()
 	if (event == .QUIT) {
 		return 1
 	}

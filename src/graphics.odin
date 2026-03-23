@@ -136,7 +136,7 @@ render_game_over_message :: proc(score: u32) {
 	SDL.RenderPresent(rend)
 }
 
-draw_block :: proc(x, y: i32, color: u32) {
+draw_block :: proc(x, y: u32, color: u32) {
 	outer: SDL.Rect
 	inner: SDL.Rect
 

@@ -46,7 +46,7 @@ handle_key_down :: proc(key_code: SDL.Keycode) -> InputEvent {
 	return .ANY_INPUT
 }
 
-listen_for_input :: proc(game_over: int) -> InputEvent {
+listen_for_input :: proc() -> InputEvent {
 	event: SDL.Event
 
 	for SDL.PollEvent(&event) {
