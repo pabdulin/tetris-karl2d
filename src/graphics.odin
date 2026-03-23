@@ -103,7 +103,7 @@ render_right_text::proc(text:cstring, y:int, Font:^TTF.Font) {
   SDL.DestroyTexture(texture);
 };
 
-render_score::proc(score:u32, level:u8) {
+render_score::proc(score:u32, level:u32) {
   score_str: cstring = fmt.ctprintf("%06d", score)
   render_right_text("SCORE", BLOCK_SIZE, Font_18);
   render_right_text(score_str, BLOCK_SIZE * 2, Font_32);
@@ -141,7 +141,7 @@ render_game_over_message::proc(score:u32) {
   SDL.RenderPresent(rend);
 }
 
-draw_block::proc( x,  y:i8,  color:u32) {
+draw_block::proc( x,  y:i32,  color:u32) {
   outer:SDL.Rect;
   inner:SDL.Rect;
 
@@ -159,20 +159,20 @@ draw_block::proc( x,  y:i8,  color:u32) {
   SDL.RenderFillRect(rend, &outer);
 
   // Shift bits and extract 8 least significant bits for each color;
-  r :u8= u8((color >> 16) & 0xFF);
-  g :u8= u8((color >> 8) & 0xFF);
-  b :u8= u8(color & 0xFF);
+  r := u8((color >> 16) & 0xFF);
+  g := u8((color >> 8) & 0xFF);
+  b := u8(color & 0xFF);
 
   SDL.SetRenderDrawColor(rend, r, g, b, 0xff);
   SDL.RenderFillRect(rend, &inner);
 }
 
 clear_screen::proc() {
-  SDL.SetRenderDrawColor(rend, 0, 0, 0, 0);
+  SDL.SetRenderDrawColor(rend, 0, 0, 0, 0xff);
   SDL.RenderClear(rend);
 }
 
-render_frame::proc(score:u32, level:u8) {
+render_frame::proc(score:u32, level:u32) {
   render_score(score, level);
   SDL.RenderPresent(rend);
 }

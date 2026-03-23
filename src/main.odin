@@ -20,7 +20,7 @@ main::proc() {
 //   emscripten_set_main_loop(run_loop, 0, 1);
 // #else
   for ;; {
-    res :i8= game_loop();
+    res :i32= game_loop();
 
     if (res != 0) {
       if (res < 0) {

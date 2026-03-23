@@ -9,24 +9,24 @@ GRID_HEIGHT :: 20
 
 // Grid is represented as m x n int matrix. Values are color indices for
 // occupied cells or 0 for empty cells
-grid :[GRID_WIDTH][GRID_HEIGHT]u8= {};
+grid :[GRID_WIDTH][GRID_HEIGHT]u32= {};
 // Array of rows that need to be destroyed
-to_destroy :[GRID_HEIGHT]u8= {};
+to_destroy :[GRID_HEIGHT]u32= {};
 
 game_over :bool= false;
 score :u32= 0;
 
-iteration :u8= 0;
-lines_cleared :u8= 0;
+iteration :u32= 0;
+lines_cleared :u32= 0;
 
-current_level :u8= 0;
-fall_freq :u8= 48;
-MAX_LEVEL_FREQ :u8: 15;
-LEVEL_FREQS :[15]u8= {48, 43, 38, 33, 28, 23, 18, 13,
+current_level :u32= 0;
+fall_freq :u32= 48;
+MAX_LEVEL_FREQ :u32: 15;
+LEVEL_FREQS :[15]u32= {48, 43, 38, 33, 28, 23, 18, 13,
                                         8,  6,  5,  4,  3,  2,  1};
-SOFT_FREQ :u8: 3;
-HARD_FREQ :u8: 1;
-N_COLORS  :u8:14;
+SOFT_FREQ :u32: 3;
+HARD_FREQ :u32: 1;
+N_COLORS  :u32:14;
 COLORS :[14]u32= {
     0x111111, 0xFFC82E, 0xFEFB34, 0x53DA3F, // first el is an empty cell
     0x01EDFA, 0xDD0AB2, 0xEA141C, 0xFE4819, 0xFF910C,
@@ -36,20 +36,20 @@ COLORS :[14]u32= {
 // Array of blocks in the current shape
 // Each value pair corresponds to the shift from the shape
 // position over x and y axis
-current_shape :[8]i8= {};
+current_shape :[8]i32= {};
 // Index of the color in the COLORS array
-current_shape_color :u8= 0;
+current_shape_color :u32= 0;
 // Index of the current shape in the SHAPES array
-current_shape_type:u8;
+current_shape_type:u32;
 
 // Current shape coordinates
-current_x :i8= 0
-current_y :i8= 0;
+current_x :i32= 0
+current_y :i32= 0;
 
 // Represent shapes as an array of 8 ints.
 // Each int pair represents the shift from the shape position over x and y axis
-N_SHAPES :u8: 7;
- SHAPES :[7][8]i8= {
+N_SHAPES :u32: 7;
+ SHAPES :[7][8]i32= {
     {0, 0, 1, 0, 0, 1, 1, 1},   // O
     {0, 0, -1, 0, 1, 0, 0, 1},  // T
     {0, 0, 0, -1, 0, 1, 1, 1},  // L
@@ -64,7 +64,7 @@ RESTART_DELAY :: 300;
 SCORE_SINGLE :: 1;
 SCORE_LINE :: 100;
 
-get_curr_fall_freq :: proc() -> u8 {
+get_curr_fall_freq :: proc() -> u32 {
   if (current_level >= MAX_LEVEL_FREQ) {
     return LEVEL_FREQS[MAX_LEVEL_FREQ - 1];
   }
@@ -75,8 +75,8 @@ state_changed :bool= false;
 
 reset_fall_freq::proc() { fall_freq = get_curr_fall_freq(); }
 
-update_fall_freq::proc(new:u8) {
-  calculated :u8= get_curr_fall_freq();
+update_fall_freq::proc(new:u32) {
+  calculated :u32= get_curr_fall_freq();
   if (calculated < new) {
     fall_freq = calculated;
   } else {
@@ -95,7 +95,7 @@ spawn_shape::proc() {
   current_shape_type := rand.uint_max(uint(N_SHAPES));
   current_shape_color := rand.uint_max(uint(N_COLORS - 1)) + 1;
 
-  for  i :i8= 0; i < 8; i += 1 {
+  for  i :i32= 0; i < 8; i += 1 {
     current_shape[i] = SHAPES[current_shape_type][i];
   }
 
@@ -103,9 +103,9 @@ spawn_shape::proc() {
 
   // Check for top collisions with existing blocks in the grid
   // If we spot any collision, we'll start with negative current_y
-   x, y:i8;
+   x, y:i32;
   for current_y = -2; current_y < 0; current_y+=1 {
-    for i :i8= 0; i < 4; i+=1 {
+    for i :i32= 0; i < 4; i+=1 {
       x = current_shape[i * 2] + current_x;
       y = current_shape[i * 2 + 1] + current_y + 1;
 
@@ -117,8 +117,8 @@ spawn_shape::proc() {
 }
 
 restart_game::proc() {
-  for i :i8= 0; i < GRID_WIDTH; i+=1 {
-    for  j :i8= 0; j < GRID_HEIGHT; j+=1 {
+  for i :i32= 0; i < GRID_WIDTH; i+=1 {
+    for  j :i32= 0; j < GRID_HEIGHT; j+=1 {
       grid[i][j] = 0;
     }
   };
@@ -132,9 +132,9 @@ restart_game::proc() {
   SDL.Delay(u32(RESTART_DELAY));
 }
 
-destroy_row::proc(row:i8) {
-  for j :i8= row; j > 0; j-=1 {
-    for i :i8= 0; i < GRID_WIDTH; i+=1 {
+destroy_row::proc(row:i32) {
+  for j :i32= row; j > 0; j-=1 {
+    for i :i32= 0; i < GRID_WIDTH; i+=1 {
       grid[i][j] = grid[i][j - 1];
     }
   }
@@ -147,12 +147,12 @@ destroy_row::proc(row:i8) {
 clean_destroyed_blocks::proc() {
   count :int= 0;
 
-  for j :i8= 0; j < GRID_HEIGHT; j+=1 {
+  for j :i32= 0; j < GRID_HEIGHT; j+=1 {
     if (to_destroy[j] != 0) {
       count+=1;
 
       to_destroy[j] = 0;
-      for i :i8= 0; i < GRID_WIDTH; i+=1 {
+      for i :i32= 0; i < GRID_WIDTH; i+=1 {
         grid[i][j] = 0;
       }
       destroy_row(j);
@@ -164,12 +164,12 @@ clean_destroyed_blocks::proc() {
   }
 }
 
-row_is_full::proc(y:i8)->int {
+row_is_full::proc(y:i32)->int {
   if ((y < 0) || to_destroy[y] != 0) { // can be negative at the end of the game
     return 1;
   }
 
-  for i :i8= 0; i < GRID_WIDTH; i+=1 {
+  for i :i32= 0; i < GRID_WIDTH; i+=1 {
     if (grid[i][y] == 0) {
       return 0;
     }
@@ -180,11 +180,11 @@ row_is_full::proc(y:i8)->int {
 }
 
 lock_shape::proc() {
-  x, y:i8;
+  x, y:i32;
 
-  to_destroy :u8= 0;
+  to_destroy :u32= 0;
 
-  for i :i8= 0; i < 4; i+=1 {
+  for i :i32= 0; i < 4; i+=1 {
     x = current_shape[i * 2] + current_x;
     y = current_shape[i * 2 + 1] + current_y;
 
@@ -211,7 +211,7 @@ lock_shape::proc() {
   spawn_shape();
 }
 
-detect_collision::proc(x, y:i8)->i8 {
+detect_collision::proc(x, y:i32)->i32 {
   if (x < 0 || x >= GRID_WIDTH) {
     return 1;
   }
@@ -236,11 +236,11 @@ rotate_shape::proc() {
 
   state_changed = true;
 
-  temp:[8]i8 = {};
+  temp:[8]i32 = {};
 
-  x, y:i8;
+  x, y:i32;
 
-  for i :i8= 0; i < 4; i+=1 {
+  for i :i32= 0; i < 4; i+=1 {
     temp[i * 2] = current_shape[i * 2 + 1];
     temp[i * 2 + 1] = -current_shape[i * 2];
 
@@ -252,17 +252,17 @@ rotate_shape::proc() {
     }
   };
 
-  for i :i8= 0; i < 8; i+=1 {
+  for i :i32= 0; i < 8; i+=1 {
     current_shape[i] = temp[i];
   }
 }
 
-move_side::proc(direction:i8) {
+move_side::proc(direction:i32) {
   reset_fall_freq();
 
-  x, y:i8;
+  x, y:i32;
 
-  for i :i8= 0; i < 4; i+=1 {
+  for i :i32= 0; i < 4; i+=1 {
     x = current_shape[i * 2] + current_x + direction;
     y = current_shape[i * 2 + 1] + current_y;
 
@@ -284,9 +284,9 @@ fall::proc() {
 
   iteration = 0;
 
-  x, y:i8;
+  x, y:i32;
 
-  for i :i8= 0; i < 4; i+=1 {
+  for i :i32= 0; i < 4; i+=1 {
     x = current_shape[i * 2] + current_x;
     y = current_shape[i * 2 + 1] + current_y + 1;
 
@@ -326,15 +326,15 @@ update_frame::proc() {
 
   clear_screen();
 
-  for i :i8= 0; i < GRID_WIDTH; i+=1 {
-    for j :i8= 0; j < GRID_HEIGHT; j+=1 {
+  for i :i32= 0; i < GRID_WIDTH; i+=1 {
+    for j :i32= 0; j < GRID_HEIGHT; j+=1 {
       draw_block(i, j, COLORS[grid[i][j]]);
     }
   }
 
-  x, y:i8;
+  x, y:i32;
 
-  for i :i8= 0; i < 4; i+=1 {
+  for i :i32= 0; i < 4; i+=1 {
     x = current_shape[i * 2] + current_x;
     y = current_shape[i * 2 + 1] + current_y;
 
@@ -347,13 +347,13 @@ update_frame::proc() {
   state_changed = false;
 }
 
-init_game::proc()->i8 {
+init_game::proc()->i32 {
   spawn_shape();
 
-  return i8(init_graphics());
+  return i32(init_graphics());
 }
 
-game_loop::proc()->i8 {
+game_loop::proc()->i32 {
   event :InputEvent= listen_for_input(int(game_over));
   if (event == .QUIT) {
     return 1;
@@ -374,7 +374,7 @@ game_loop::proc()->i8 {
   return 0;
 }
 
-terminate_game::proc()->i8 {
+terminate_game::proc()->i32 {
   release_resources();
   return 0;
 }
