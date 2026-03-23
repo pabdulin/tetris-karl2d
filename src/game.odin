@@ -27,7 +27,7 @@ LEVEL_FREQS :[15]u8= {48, 43, 38, 33, 28, 23, 18, 13,
 SOFT_FREQ :u8: 3;
 HARD_FREQ :u8: 1;
 N_COLORS  :u8:14;
-COLORS :[14]u32: {
+COLORS :[14]u32= {
     0x111111, 0xFFC82E, 0xFEFB34, 0x53DA3F, // first el is an empty cell
     0x01EDFA, 0xDD0AB2, 0xEA141C, 0xFE4819, 0xFF910C,
     0x39892F, 0x0077D3, 0x78256F, 0x2E2E84, 0x485DC5,
@@ -59,10 +59,10 @@ N_SHAPES :u8: 7;
     {0, 0, -1, 0, 0, 1, 1, 1},  // Z
 };
 
-FRAME_DELAY :u8: 16; // 1000 / 16 ~= 60fps
-RESTART_DELAY :u16: 300;
-SCORE_SINGLE :u8: 1;
-SCORE_LINE :u8: 100;
+FRAME_DELAY :: 16; // 1000 / 16 ~= 60fps
+RESTART_DELAY :: 300;
+SCORE_SINGLE :: 1;
+SCORE_LINE :: 100;
 
 get_curr_fall_freq :: proc() -> u8 {
   if (current_level >= MAX_LEVEL_FREQ) {
@@ -132,7 +132,7 @@ restart_game::proc() {
   SDL.Delay(u32(RESTART_DELAY));
 }
 
-destroy_row::proc(row:int) {
+destroy_row::proc(row:i8) {
   for j :i8= row; j > 0; j-=1 {
     for i :i8= 0; i < GRID_WIDTH; i+=1 {
       grid[i][j] = grid[i][j - 1];
@@ -160,12 +160,12 @@ clean_destroyed_blocks::proc() {
   }
 
   if (count != 0) {
-    score += SCORE_LINE * (1 + 2 * (count - 1));
+    score += u32(SCORE_LINE * (1 + 2 * (count - 1)));
   }
 }
 
 row_is_full::proc(y:i8)->int {
-  if (y < 0 || to_destroy[y]) { // can be negative at the end of the game
+  if ((y < 0) || to_destroy[y] != 0) { // can be negative at the end of the game
     return 1;
   }
 
@@ -192,7 +192,7 @@ lock_shape::proc() {
       grid[x][y] = current_shape_color;
     }
 
-    if (row_is_full(y)) {
+    if (row_is_full(y) != 0) {
       to_destroy+=1;
     } else {
       if (y <= 0) {
@@ -201,7 +201,7 @@ lock_shape::proc() {
     }
   }
 
-  if (to_destroy) {
+  if (to_destroy != 0) {
     clean_destroyed_blocks();
   }
 
@@ -220,7 +220,7 @@ detect_collision::proc(x, y:i8)->i8 {
     return 1;
   }
 
-  if (y >= 0 && grid[x][y]) {
+  if (y >= 0 && grid[x][y] != 0) {
     return 1;
   }
 
@@ -236,7 +236,7 @@ rotate_shape::proc() {
 
   state_changed = 1;
 
-  temp:[8]i8 = {0};
+  temp:[8]i8 = {};
 
   x, y:i8;
 
@@ -247,7 +247,7 @@ rotate_shape::proc() {
     x = temp[i * 2] + current_x;
     y = temp[i * 2 + 1] + current_y;
 
-    if (detect_collision(x, y)) {
+    if (detect_collision(x, y) != 0) {
       return;
     }
   };
@@ -257,7 +257,7 @@ rotate_shape::proc() {
   }
 }
 
-move_side::proc(direction:int) {
+move_side::proc(direction:i8) {
   reset_fall_freq();
 
   x, y:i8;
@@ -266,7 +266,7 @@ move_side::proc(direction:int) {
     x = current_shape[i * 2] + current_x + direction;
     y = current_shape[i * 2 + 1] + current_y;
 
-    if (detect_collision(x, y)) {
+    if (detect_collision(x, y) != 0) {
       return;
     }
   }
@@ -290,8 +290,9 @@ fall::proc() {
     x = current_shape[i * 2] + current_x;
     y = current_shape[i * 2 + 1] + current_y + 1;
 
-    if (detect_collision(x, y)) {
-      return lock_shape();
+    if (detect_collision(x, y) != 0) {
+      //return
+      lock_shape(); return; // TODO (p.abdulin): check
     }
   }
 
@@ -301,25 +302,25 @@ fall::proc() {
 
 handle_input_event::proc(event:InputEvent) {
   #partial switch (event) {
-  case LEFT:
-    return move_side(-1);
-  case RIGHT:
-    return move_side(1);
-  case ROTATE:
-    return rotate_shape();
-  case HARD_DROP:
-    return update_fall_freq(HARD_FREQ);
-  case SOFT_DROP:
-    return update_fall_freq(SOFT_FREQ);
+  case .LEFT:
+    move_side(-1);
+  case .RIGHT:
+    move_side(1);
+  case .ROTATE:
+    rotate_shape();
+  case .HARD_DROP:
+    update_fall_freq(HARD_FREQ);
+  case .SOFT_DROP:
+    update_fall_freq(SOFT_FREQ);
   }
 }
 
 update_frame::proc() {
-  if (game_over) {
-    return render_game_over_message(score);
+  if (game_over != 0) {
+    render_game_over_message(score); return;
   }
 
-  if (!state_changed) {
+  if (state_changed == 0) {
     return; // no need to rerender if all blocks remain at the same positions
   }
 
@@ -349,17 +350,17 @@ update_frame::proc() {
 init_game::proc()->i8 {
   spawn_shape();
 
-  return init_graphics();
+  return i8(init_graphics());
 }
 
 game_loop::proc()->i8 {
-  event :InputEvent= listen_for_input(game_over);
-  if (event == QUIT) {
+  event :InputEvent= listen_for_input(int(game_over));
+  if (event == .QUIT) {
     return 1;
   }
 
-  if (game_over) {
-    if (event > 0) {
+  if (game_over != 0) {
+    if (int(event) > 0) {
       restart_game();
     }
   } else {

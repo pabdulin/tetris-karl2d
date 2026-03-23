@@ -103,7 +103,7 @@ render_right_text::proc(text:cstring, y:int, Font:^TTF.Font) {
   SDL.DestroyTexture(texture);
 };
 
-render_score::proc(score:int, level:int) {
+render_score::proc(score:u32, level:u8) {
   score_str: cstring = fmt.ctprintf("%06d", score)
   render_right_text("SCORE", BLOCK_SIZE, Font_18);
   render_right_text(score_str, BLOCK_SIZE * 2, Font_32);
@@ -129,7 +129,7 @@ render_game_over_text::proc(text:cstring, y:int, Font:^TTF.Font) {
   SDL.DestroyTexture(texture);
 }
 
-render_game_over_message::proc(score:int) {
+render_game_over_message::proc(score:u32) {
   score_str: cstring = fmt.ctprintf("%06d", score)
 
   render_game_over_text("GAME OVER", WIN_HEIGHT / 2 - BLOCK_SIZE * 3, Font_32);
@@ -141,7 +141,7 @@ render_game_over_message::proc(score:int) {
   SDL.RenderPresent(rend);
 }
 
-draw_block::proc( x:int,  y:int,  color:u32) {
+draw_block::proc( x,  y:i8,  color:u32) {
   outer:SDL.Rect;
   inner:SDL.Rect;
 
@@ -172,7 +172,7 @@ clear_screen::proc() {
   SDL.RenderClear(rend);
 }
 
-render_frame::proc(score:int, level:int) {
+render_frame::proc(score:u32, level:u8) {
   render_score(score, level);
   SDL.RenderPresent(rend);
 }
