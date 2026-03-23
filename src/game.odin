@@ -92,8 +92,8 @@ end_game::proc() {
 spawn_shape::proc() {
   state_changed = true;
 
-  current_shape_type := rand.uint_max(uint(N_SHAPES));
-  current_shape_color := rand.uint_max(uint(N_COLORS - 1)) + 1;
+  current_shape_type = u32(rand.uint_max(uint(N_SHAPES)));
+  current_shape_color = u32(rand.uint_max(uint(N_COLORS - 1)) + 1);
 
   for  i :i32= 0; i < 8; i += 1 {
     current_shape[i] = SHAPES[current_shape_type][i];
