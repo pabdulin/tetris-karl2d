@@ -27,7 +27,7 @@ main :: proc() {
 		fmt.printfln("-------------------- [Tracking_Allocator] --------------------")
 	}
 
-	if (init_game() != 0) {
+	if (!init_game()) {
 		SDL.LogError(0, "Failed to start game\n")
 		return
 	}
@@ -43,7 +43,7 @@ main :: proc() {
 		}
 	}
 
-	if (terminate_game() != 0) {
+	if (!terminate_game()) {
 		SDL.LogError(0, "Error while terminating game\n")
 	}
 }

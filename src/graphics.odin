@@ -44,33 +44,33 @@ init_fonts :: proc() -> int {
 	return 0
 }
 
-init_graphics :: proc() -> int {
+init_graphics :: proc() -> bool {
 	if (SDL.Init(SDL.INIT_VIDEO) != 0) {
 		SDL.LogError(0, "error initializing SDL: %s\\n", SDL.GetError())
-		return -1
+		return false
 	}
 
 	win = SDL.CreateWindow(
 		WIN_TITLE,
 		SDL.WINDOWPOS_CENTERED,
 		SDL.WINDOWPOS_CENTERED,
-		i32(WIN_WIDTH),
-		i32(WIN_HEIGHT),
+		c.int(WIN_WIDTH),
+		c.int(WIN_HEIGHT),
 		{},
 	)
 
 	if (win == nil) {
 		SDL.LogError(0, "error creating window: %s\n", SDL.GetError())
 		SDL.Quit()
-		return -1
+		return false
 	}
 
-	rend = SDL.CreateRenderer(win, -1, SDL.RENDERER_PRESENTVSYNC)
+	rend = SDL.CreateRenderer(win, -1, {.PRESENTVSYNC})
 	if (rend == nil) {
 		SDL.LogError(0, "error creating renderer: %s\n", SDL.GetError())
 		SDL.DestroyWindow(win)
 		SDL.Quit()
-		return -1
+		return false
 	}
 
 	SDL.CreateRGBSurface(0, i32(WIN_WIDTH), i32(WIN_HEIGHT), 32, 0, 0, 0, 0)
@@ -78,10 +78,10 @@ init_graphics :: proc() -> int {
 	if (init_fonts() != 0) {
 		SDL.DestroyWindow(win)
 		SDL.Quit()
-		return -1
+		return false
 	}
 
-	return 0
+	return true
 }
 
 render_right_text :: proc(text: cstring, y: int, Font: ^TTF.Font) {

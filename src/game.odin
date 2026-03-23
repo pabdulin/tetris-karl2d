@@ -358,10 +358,10 @@ update_frame :: proc() {
 	state_changed = false
 }
 
-init_game :: proc() -> i32 {
+init_game :: proc() -> bool {
 	spawn_shape()
 
-	return i32(init_graphics())
+	return init_graphics()
 }
 
 game_loop :: proc() -> i32 {
@@ -385,7 +385,7 @@ game_loop :: proc() -> i32 {
 	return 0
 }
 
-terminate_game :: proc() -> i32 {
+terminate_game :: proc() -> bool {
 	release_resources()
-	return 0
+	return true
 }
