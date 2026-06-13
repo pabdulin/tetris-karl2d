@@ -253,7 +253,7 @@ detect_collision :: proc(x, y: i32) -> i32 {
 	return 0
 }
 
-rotate_shape :: proc() {
+rotate_shape_ccw :: proc() {
 	reset_fall_freq()
 
 	if (current_shape_type == 0) {
@@ -327,17 +327,19 @@ fall :: proc() {
 }
 
 handle_input_event :: proc(event: InputEvent) {
-	#partial switch (event) {
-	case .LEFT:
+    #partial switch (event) {
+	case .MOVE_LEFT:
 		move_side(-1)
-	case .RIGHT:
+	case .MOVE_RIGHT:
 		move_side(1)
-	case .ROTATE:
-		rotate_shape()
+	case .ROTATE_CCW:
+		rotate_shape_ccw()
 	case .HARD_DROP:
 		update_fall_freq(HARD_FREQ)
-	case .SOFT_DROP:
+	case .SOFT_DROP_BEGIN:
 		update_fall_freq(SOFT_FREQ)
+	case .SOFT_DROP_END:
+		reset_fall_freq()
 	}
 }
 
@@ -381,7 +383,7 @@ init_game :: proc() -> bool {
 }
 
 game_loop :: proc() -> i32 {
-	event: InputEvent = listen_for_input()
+	event: InputEvent = listen_for_input() // TODO: assumes only one input event at a time
 	if (event == .QUIT) {
 		return 1
 	}
@@ -391,7 +393,7 @@ game_loop :: proc() -> i32 {
 			restart_game()
 		}
 	} else {
-		handle_input_event(event)
+		handle_input_event(event) // TODO: assumes only one input event at a time
 		fall()
 		update_frame()
 	}
