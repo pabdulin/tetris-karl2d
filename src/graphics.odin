@@ -73,8 +73,6 @@ init_graphics :: proc() -> bool {
 		return false
 	}
 
-	SDL.CreateRGBSurface(0, i32(WIN_WIDTH), i32(WIN_HEIGHT), 32, 0, 0, 0, 0)
-
 	if (init_fonts() != 0) {
 		SDL.DestroyWindow(win)
 		SDL.Quit()
