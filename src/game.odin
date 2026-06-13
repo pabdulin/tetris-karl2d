@@ -209,7 +209,7 @@ lock_shape :: proc() {
 			local_to_destroy = true
 		} else {
             // if one of the locked shape cells is outside of the grid
-			if (y <= 0) {
+			if (y < 0) {
 				end_game()
 			}
 		}
