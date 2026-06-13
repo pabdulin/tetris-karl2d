@@ -382,9 +382,8 @@ game_loop :: proc() -> i32 {
 		handle_input_event(event)
 		fall()
 		update_frame()
-
-		SDL.Delay(FRAME_DELAY)
 	}
+    SDL.Delay(FRAME_DELAY)
 
 	return 0
 }
