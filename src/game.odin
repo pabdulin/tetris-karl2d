@@ -144,11 +144,18 @@ restart_game :: proc() {
 }
 
 destroy_row :: proc(row: u32) {
-	for j: u32 = row; j > 0; j -= 1 {
+	// shift grid content down 1 line
+    for j: u32 = row; j > 0; j -= 1 {
 		for i: u32 = 0; i < GRID_WIDTH; i += 1 {
 			grid[i][j] = grid[i][j - 1]
 		}
 	}
+
+    // clear topmost line
+    for i: u32 = 0; i < GRID_WIDTH; i += 1 {
+			grid[i][0] = 0
+		}
+
 	lines_cleared += 1
 	if (lines_cleared % 10 == 0) {
 		current_level += 1
@@ -176,7 +183,12 @@ clean_destroyed_blocks :: proc() {
 }
 
 row_is_full :: proc(y: i32) -> int {
-	if ((y < 0) || to_destroy[y] != 0) { 	// can be negative at the end of the game
+    // outside of the well always false
+    if (y < 0) {
+        return 0
+    }
+
+	if (to_destroy[y] != 0) { 	// can be negative at the end of the game
 		return 1
 	}
 
