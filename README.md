@@ -1,59 +1,25 @@
-# SDL Tetris (port to Odin programming language)
+# Tetris porting project: C+SDL to Odin+Karl2D
 
-This project is based on:
-https://github.com/olzhasar/sdl-tetris
+The goal is to practice software restoration, porting, and adaptation of an existing small C codebase.
 
-An implementation of the classic [Tetris game](https://en.wikipedia.org/wiki/Tetris) in the C programming language using the [SDL-2 library](https://www.libsdl.org/)
+## Project status
 
-## WebAssembly
+- Game ported from C to Odin using same SDL2 lib backend.
+- A few small bugs were fixed and minor improvements were made during the port.
+- [Karl2D](https://github.com/karl-zylinski/karl2d) port is planned.
 
-The game has been ported to WebAssembly using [Emscripten](https://emscripten.org/)
-
-Check out the [Live Demo](https://olzhasar.github.io/sdl-tetris/)
-
-## Desktop preview
-
-![Preview](preview.gif)
-
-## Installation
-
-1. Clone this repository to your system:
+## Build and run
 
 ```sh
-git clone https://github.com/olzhasar/sdl-tetris.git
+build_debug.bat
 ```
-
-2. [Install](https://wiki.libsdl.org/SDL2/Installation) SDL2 and SDL2_ttf on your machine
-
-- On MacOS you can use Homebrew:
-
-```sh
-brew install sdl2 sdl2_ttf
-```
-
-3. Compile and run the project code with make
-
-```sh
-cd sdl-tetris
-make
-```
-
-## Controls
-
-- Rotate: Up arrow, W
-- Move Left: Left arrow, A
-- Move Right: Right arrow, D
-- Soft Drop: Down arrow, S
-- Hard drop: Space
-- Quit: ESC
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the MIT License.
+
+See the [LICENSE](LICENSE) file for details.
 
 ## Attribution
 
-This project is derived from:
-https://github.com/olzhasar/sdl-tetris
-
-Used under MIT License.
+This project is derived from [sdl-tetris](https://github.com/olzhasar/sdl-tetris), [commit](https://github.com/olzhasar/sdl-tetris/commit/a9ec2bf4a5f3cce69bf58a394c0e5ff67de73aad)
